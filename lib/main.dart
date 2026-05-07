@@ -1,5 +1,6 @@
 import 'package:cgw_app/time.dart';
 import 'package:flutter/material.dart';
+import 'package:getwidget/getwidget.dart';
 
 void main() => runApp(const MyApp());
 
@@ -23,10 +24,23 @@ class Shell extends StatefulWidget {
 }
 
 class _ShellState extends State<Shell> {
-  bool _showControls = false;
+  final TextEditingController _nameController = TextEditingController(
+    text: 'CGW(46A5)',
+  );
+  final TextEditingController _ipController = TextEditingController(
+    text: '176.891.198',
+  );
 
+  bool _showControls = false;
   void _showControlsPage() => setState(() => _showControls = true);
   void _showMainPage() => setState(() => _showControls = false);
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _ipController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,50 +124,89 @@ class _ShellState extends State<Shell> {
             ),
 
             Container(
-              height: 64,
+              height: 72, // a bit taller for inputs
               color: Colors.grey.shade200,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    IconButton(
-                      tooltip: 'Back',
-                      icon: const Icon(Icons.arrow_back),
-                      iconSize: 40,
-                      onPressed: () async {
-                        await Navigator.of(context).maybePop();
-                      },
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                spacing: 12,
+                children: [
+                  // Back
+                  IconButton(
+                    tooltip: 'Back',
+                    icon: const Icon(Icons.arrow_back),
+                    iconSize: 36,
+                    onPressed: () => Navigator.of(context).maybePop(),
+                  ),
 
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Row(
-                          children: [
-                            Icon(Icons.info_outline, size: 20),
-                            SizedBox(width: 5),
-                            Text("Name: CGW(46A5)"),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Icon(Icons.settings_ethernet, size: 20),
-                            SizedBox(width: 5),
-                            Text("IP Address:176.891.198"),
-                          ],
+                  // Name group (flexible, constrained)
+                  Flexible(
+                    flex: 2,
+                    child: Row(
+                      children: [
+                        const Icon(Icons.info_outline, size: 20),
+                        const SizedBox(width: 8),
+                        const Text('Name:'),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 300),
+                            child: TextField(
+                              controller: _nameController,
+                              decoration: const InputDecoration(
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 8,
+                                  horizontal: 12,
+                                ),
+                                border: OutlineInputBorder(),
+                                hintText: '',
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                    IconButton(
-                      tooltip: 'Home',
-                      icon: const Icon(Icons.home),
-                      iconSize: 40,
-                      onPressed: _showMainPage,
+                  ),
+
+                  // IP group (flexible, constrained)
+                  Flexible(
+                    flex: 2,
+                    child: Row(
+                      children: [
+                        const Icon(Icons.settings_ethernet, size: 20),
+                        const SizedBox(width: 8),
+                        const Text('IP Address:'),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 220),
+                            child: TextField(
+                              controller: _ipController,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 8,
+                                  horizontal: 12,
+                                ),
+                                border: OutlineInputBorder(),
+                                hintText: '',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+
+                  // Home
+                  IconButton(
+                    tooltip: 'Home',
+                    icon: const Icon(Icons.home),
+                    iconSize: 36,
+                    onPressed: _showMainPage,
+                  ),
+                ],
               ),
             ),
           ],
@@ -163,8 +216,8 @@ class _ShellState extends State<Shell> {
   }
 }
 
-final running = 0;
-final stop = 0;
+final running = 9;
+final stop = 1;
 final error = 1;
 final total = running + stop + error;
 
@@ -200,20 +253,29 @@ class MainContent extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 spacing: 15,
                 children: [
-                  ElevatedButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: const Color.fromARGB(255, 111, 111, 111),
-                    ),
+                  GFButton(
                     onPressed: () {},
-                    child: Text("ON"),
+                    text: "ON",
+                    color: const Color.fromARGB(255, 227, 227, 227),
+                    textColor: const Color.fromARGB(
+                      255,
+                      77,
+                      77,
+                      77,
+                    ), // Set color using GFColors
                   ),
 
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: const Color.fromARGB(255, 111, 111, 111),
-                    ),
+                  GFButton(
                     onPressed: () {},
-                    child: Text("OFF"),
+                    text: "OFF",
+                    color: const Color.fromARGB(255, 227, 227, 227),
+                    textColor: const Color.fromARGB(
+                      255,
+                      77,
+                      77,
+                      77,
+                    ), // Set color using GFColors
+                    // Set color using GFColors
                   ),
                 ],
               ),
