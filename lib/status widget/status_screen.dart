@@ -1,15 +1,14 @@
 import 'dart:math' as math;
+import 'package:cgw_app/status%20widget/settings_icon.dart';
 import 'package:cgw_app/pressed_card.dart';
-import 'package:cgw_app/status%20widget/sliding_knob.dart';
 import 'package:flutter/material.dart';
-import 'status_button.dart';
 
-class WideTrafficWidget extends StatelessWidget {
+class StatusScreen extends StatelessWidget {
   final int running;
   final int stop;
   final int error;
 
-  const WideTrafficWidget({
+  const StatusScreen({
     super.key,
     required this.running,
     required this.stop,
@@ -32,6 +31,7 @@ class WideTrafficWidget extends StatelessWidget {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               PressableCard(
                 onTap: () {
@@ -49,16 +49,9 @@ class WideTrafficWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              SlidingTriStateKnob(
-                width: 100,
-                height: 25,
-                onPressedOn: () async {
-                  // action for On (can be async)
-                  print('ON pressed');
-                },
-                onPressedOff: () {
-                  // action for Off
-                  print('OFF pressed');
+              SettingsButton(
+                onTap: () {
+                  print("settings pressed");
                 },
               ),
             ],
@@ -83,25 +76,10 @@ class WideTrafficWidget extends StatelessWidget {
                   ),
                 ),
                 // 2. The Internal Labels
-                Positioned(
-                  bottom: 10,
+                Center(
                   child: SizedBox(
                     width: 120,
-                    child: Column(
-                      children: [
-                        _buildRow('Running', running, const Color(0xFF4CAF50)),
-                        const Divider(
-                          color: Color.fromARGB(255, 138, 137, 137),
-                          height: 12,
-                        ),
-                        _buildRow('Stop', stop, const Color(0xFFF9A825)),
-                        const Divider(
-                          color: Color.fromARGB(255, 138, 137, 137),
-                          height: 12,
-                        ),
-                        _buildRow('Error', error, const Color(0xFFB91C1C)),
-                      ],
-                    ),
+                    child: Text("Total : ${running + stop + error}"),
                   ),
                 ),
               ],
@@ -109,27 +87,15 @@ class WideTrafficWidget extends StatelessWidget {
           ),
           const SizedBox(height: 15),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 15,
             children: [
-              StatusButton(
-                type: StatusType.running,
-                label: 'RUNNING',
-                onTap: () => print('Running ...'),
-              ),
-              const SizedBox(width: 12),
-              StatusButton(
-                type: StatusType.stop,
-                label: 'STOP',
-                onTap: () => print('stoping.'),
-              ),
-              const SizedBox(width: 12),
-              StatusButton(
-                type: StatusType.error,
-                label: 'ERROR',
-                onTap: () => print('errors'),
-              ),
+              Container(child: Text("Running : $running")),
+              Container(child: Text("Stop : $stop")),
+              Container(child: Text("Error : $error")),
             ],
           ),
+          const SizedBox(height: 15),
         ],
       ),
     );
@@ -191,7 +157,7 @@ class GaugePainter extends CustomPainter {
     }
 
     drawSegment(running, const Color(0xFF16A34A), false);
-    drawSegment(stop, const Color(0xFFD97706), false);
+    drawSegment(stop, const Color(0xFFF9A825), false);
     drawSegment(error, const Color(0xFFDC2626), true);
   }
 

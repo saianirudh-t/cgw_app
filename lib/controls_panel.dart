@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'settings_icon.dart';
-import '../pressed_card.dart';
+import 'pressed_card.dart';
 
 class ControlsPanel extends StatelessWidget {
   final VoidCallback? onSettingsTap;
@@ -24,22 +23,12 @@ class ControlsPanel extends StatelessWidget {
         top: false,
         bottom: false,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header row
-            Row(
-              children: [
-                const Expanded(
-                  child: Text(
-                    'Controls',
-                    style: TextStyle(color: Colors.black87, fontSize: 20),
-                  ),
-                ),
-                SettingsButton(
-                  onTap: () {
-                    print("settings tapped");
-                  },
-                ),
-              ],
+            Text(
+              'Controls',
+              style: TextStyle(color: Colors.black87, fontSize: 20),
             ),
             const SizedBox(height: 10),
             // Cards column
