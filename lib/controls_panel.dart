@@ -33,31 +33,80 @@ class ControlsPanel extends StatelessWidget {
             const SizedBox(height: 10),
             // Cards column
             Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  PressableCard(
-                    onTap: () {
-                      print('tapped aircon');
-                    },
-                    child: _DeviceCard(
-                      title: 'Aircon',
-                      subtitle: 'Living Room',
-                      accentColor: airconAccent,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  PressableCard(
-                    onTap: () {
-                      print("Heating pressed");
-                    },
-                    child: _DeviceCard(
-                      title: 'Heating',
-                      subtitle: 'Living Room',
-                      accentColor: heatingAccent,
-                    ),
-                  ),
-                ],
+              child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  // 1. Define the screen height limit (e.g., 550 pixels)
+                  // Falls back to MediaQuery height if the parent container context is unconstrained
+                  final double availableHeight =
+                      constraints.maxHeight == double.infinity
+                      ? MediaQuery.of(context).size.height
+                      : constraints.maxHeight;
+
+                  // 2. Flip axis direction if the layout environment is short
+                  final bool isShortScreen = availableHeight < 165.0;
+
+                  return Flex(
+                    direction: isShortScreen ? Axis.horizontal : Axis.vertical,
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+
+                    children: [
+                      // If in Row mode, wrap children in Expanded to distribute spacing evenly
+                      isShortScreen
+                          ? Expanded(
+                              child: PressableCard(
+                                onTap: () {
+                                  print('tapped aircon');
+                                },
+                                child: _DeviceCard(
+                                  title: 'Aircon',
+                                  subtitle: 'Living Room',
+                                  accentColor: airconAccent,
+                                ),
+                              ),
+                            )
+                          : PressableCard(
+                              onTap: () {
+                                print('tapped aircon');
+                              },
+                              child: _DeviceCard(
+                                title: 'Aircon',
+                                subtitle: 'Living Room',
+                                accentColor: airconAccent,
+                              ),
+                            ),
+
+                      // Dynamic padding spacer block based on active layout axis orientation
+                      isShortScreen
+                          ? const SizedBox(width: 16)
+                          : const SizedBox(height: 16),
+
+                      isShortScreen
+                          ? Expanded(
+                              child: PressableCard(
+                                onTap: () {
+                                  print("Heating pressed");
+                                },
+                                child: _DeviceCard(
+                                  title: 'Heating',
+                                  subtitle: 'Living Room',
+                                  accentColor: heatingAccent,
+                                ),
+                              ),
+                            )
+                          : PressableCard(
+                              onTap: () {
+                                print("Heating pressed");
+                              },
+                              child: _DeviceCard(
+                                title: 'Heating',
+                                subtitle: 'Living Room',
+                                accentColor: heatingAccent,
+                              ),
+                            ),
+                    ],
+                  );
+                },
               ),
             ),
           ],

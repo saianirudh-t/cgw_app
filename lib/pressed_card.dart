@@ -4,8 +4,7 @@ class PressableCard extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;
 
-  const PressableCard({Key? key, required this.child, this.onTap})
-    : super(key: key);
+  PressableCard({Key? key, required this.child, this.onTap}) : super(key: key);
 
   @override
   _PressableCardState createState() => _PressableCardState();
@@ -21,7 +20,7 @@ class _PressableCardState extends State<PressableCard> {
   @override
   Widget build(BuildContext context) {
     final scale = _pressed ? 0.97 : 1.0;
-    final opacity = _pressed ? 0.92 : 1.0;
+    final opacity = _pressed ? 0.85 : 1.0;
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,

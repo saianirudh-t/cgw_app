@@ -1,20 +1,28 @@
 import 'dart:math' as math;
-import 'package:cgw_app/status%20widget/settings_icon.dart';
-import 'package:cgw_app/pressed_card.dart';
-import 'package:flutter/material.dart';
 
-class StatusScreen extends StatelessWidget {
+import 'package:cgw_app/pressed_card.dart';
+import 'package:cgw_app/status%20widget/status_row.dart';
+import 'package:flutter/material.dart';
+import 'device_info.dart';
+import 'package:cgw_app/status widget/settings_icon.dart';
+
+class StatusScreen extends StatefulWidget {
   final int running;
   final int stop;
   final int error;
-
   const StatusScreen({
-    super.key,
+    Key? key,
     required this.running,
     required this.stop,
     required this.error,
-  });
+  }) : super(key: key);
 
+  @override
+  State<StatusScreen> createState() => _StatusScreenState();
+}
+
+class _StatusScreenState extends State<StatusScreen> {
+  bool _infopressed = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,21 +42,67 @@ class StatusScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               PressableCard(
-                onTap: () {
-                  print("Device info pressed");
+                onTap: () async {
+                  setState(() {
+                    _infopressed = true;
+                  });
+                  final RenderBox renderBox =
+                      context.findRenderObject() as RenderBox;
+                  final Offset offset = renderBox.localToGlobal(Offset.zero);
+                  // 2. Open your separate menu container at that precise location
+                  await showMenu<void>(
+                    context: context,
+                    useRootNavigator: true,
+                    elevation: 6,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    color: Colors.white,
+                    position: RelativeRect.fromLTRB(
+                      offset.dx,
+                      offset.dy + 50,
+                      offset.dx + renderBox.size.width,
+                      offset.dy,
+                    ),
+
+                    items: [
+                      PopupMenuItem<void>(
+                        enabled: false,
+                        padding: EdgeInsets.zero,
+                        child: DeviceInfoLeftMenu(
+                          currentDevice: 'CGW0954',
+                          allDevices: const [
+                            'CGW0953',
+                            'CGW0954',
+                            'CGW0955',
+                            'CGW0956',
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                  if (mounted) {
+                    setState(() {
+                      _infopressed = false;
+                    });
+                  }
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   spacing: 2,
                   children: [
-                    const Text(
+                    Text(
                       'CGW0954',
                       style: TextStyle(color: Colors.black87, fontSize: 20),
                     ),
-                    const Icon(Icons.expand_more, size: 30),
+                    Icon(
+                      _infopressed ? Icons.expand_less : Icons.expand_more,
+                      size: 30,
+                    ),
                   ],
                 ),
               ),
+
               SettingsButton(
                 onTap: () {
                   print("settings pressed");
@@ -57,7 +111,6 @@ class StatusScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 30),
-          // Stack allows placing labels inside the Arc
           Align(
             alignment: Alignment.center,
             child: Stack(
@@ -65,55 +118,70 @@ class StatusScreen extends StatelessWidget {
               children: [
                 // 1. The Gauge
                 SizedBox(
-                  height: 140,
-                  width: 280,
+                  height: 130,
+                  width: 260,
                   child: CustomPaint(
                     painter: GaugePainter(
-                      running: running,
-                      stop: stop,
-                      error: error,
+                      running: widget.running,
+                      stop: widget.stop,
+                      error: widget.error,
                     ),
                   ),
                 ),
-                // 2. The Internal Labels
                 Center(
-                  child: SizedBox(
-                    width: 120,
-                    child: Text("Total : ${running + stop + error}"),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 199, 199, 199),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.grey.shade50, // Very soft border line
+                        width: 1.0,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min, // Hug content tightly
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline
+                          .alphabetic, // Aligns baselines of text and number
+                      children: [
+                        Text(
+                          "Total : ",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey.shade600,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        Text(
+                          "${widget.running + widget.stop + widget.error}",
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 15),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 15,
-            children: [
-              Container(child: Text("Running : $running")),
-              Container(child: Text("Stop : $stop")),
-              Container(child: Text("Error : $error")),
-            ],
+          StatusRow(
+            running: widget.running,
+            stop: widget.stop,
+            error: widget.error,
           ),
           const SizedBox(height: 15),
         ],
       ),
-    );
-  }
-
-  Widget _buildRow(String label, int value, Color color) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: TextStyle(color: color, fontSize: 14)),
-        Text(
-          value.toString(),
-          style: const TextStyle(
-            color: Colors.black54,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
     );
   }
 }

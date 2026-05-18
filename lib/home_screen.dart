@@ -37,16 +37,13 @@ class _HomeScreen extends State<HomeScreen> {
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFF000000).withOpacity(0.05),
-                      offset: const Offset(
-                        0,
-                        0,
-                      ), // Centered: spreads equally everywhere
+                      offset: const Offset(0, 0),
                       blurRadius: 1.0, // Softness of the shadow edge
                       spreadRadius: 2.0, // Expands the shadow size outward
                     ),
                   ],
                 ),
-                child: StatusScreen(running: 2, stop: 1, error: 1),
+                child: StatusScreen(running: 10, stop: 2, error: 6),
               ),
               Expanded(
                 child: Container(
@@ -56,10 +53,7 @@ class _HomeScreen extends State<HomeScreen> {
                     boxShadow: [
                       BoxShadow(
                         color: const Color(0xFF000000).withOpacity(0.05),
-                        offset: const Offset(
-                          0,
-                          0,
-                        ), // Centered: spreads equally everywhere
+                        offset: const Offset(0, 0),
                         blurRadius: 1.0, // Softness of the shadow edge
                         spreadRadius: 2.0, // Expands the shadow size outward
                       ),
