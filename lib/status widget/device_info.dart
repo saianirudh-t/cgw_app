@@ -1,20 +1,15 @@
+import 'package:cgw_app/splash%20screen/login_card.dart';
 import 'package:flutter/material.dart';
 
-class DeviceInfoLeftMenu extends StatefulWidget {
-  final String currentDevice;
-  final List<String> allDevices;
-
-  const DeviceInfoLeftMenu({
-    Key? key,
-    required this.currentDevice,
-    required this.allDevices,
-  }) : super(key: key);
+class DeviceInfo extends StatefulWidget {
+  final DeviceConfigResult? result;
+  const DeviceInfo({Key? key, this.result}) : super(key: key);
 
   @override
-  _DeviceInfoLeftMenuState createState() => _DeviceInfoLeftMenuState();
+  _DeviceInfoState createState() => _DeviceInfoState();
 }
 
-class _DeviceInfoLeftMenuState extends State<DeviceInfoLeftMenu> {
+class _DeviceInfoState extends State<DeviceInfo> {
   final TextEditingController _ipController = TextEditingController();
   bool _isDeviceOn = true;
 
@@ -26,6 +21,8 @@ class _DeviceInfoLeftMenuState extends State<DeviceInfoLeftMenu> {
 
   @override
   Widget build(BuildContext context) {
+    final name = widget.result?.deviceName ?? 'Unknown device';
+    final ip = widget.result?.ip ?? '—';
     return Material(
       borderRadius: BorderRadius.circular(12.0),
       color: Colors.white,
@@ -73,49 +70,13 @@ class _DeviceInfoLeftMenuState extends State<DeviceInfoLeftMenu> {
                   ),
                 ),
               ),
-              child: const Text(
-                "Connected device",
+              child: Text(
+                "Connected device: $name",
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                 ),
-              ),
-            ),
-
-            // Fixed-Height Scroll Box
-            Container(
-              height: 110,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: widget.allDevices.length,
-                itemExtent: 36.0,
-                itemBuilder: (context, index) {
-                  final deviceName = widget.allDevices[index];
-                  final isSelected = deviceName == widget.currentDevice;
-                  return ListTile(
-                    dense: true,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                    title: Text(
-                      deviceName,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: isSelected
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                      ),
-                    ),
-                    selected: isSelected,
-                    selectedTileColor: Colors.grey.shade100,
-                    onTap: () {
-                      // Handle select modifications
-                    },
-                  );
-                },
               ),
             ),
 
@@ -134,9 +95,9 @@ class _DeviceInfoLeftMenuState extends State<DeviceInfoLeftMenu> {
               child: TextField(
                 controller: _ipController,
                 keyboardType: TextInputType.number,
-                style: const TextStyle(fontSize: 13),
+                style: TextStyle(fontSize: 13),
                 decoration: InputDecoration(
-                  hintText: "192.168.1.100",
+                  hintText: ip,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 10,
                     vertical: 6,
@@ -146,7 +107,7 @@ class _DeviceInfoLeftMenuState extends State<DeviceInfoLeftMenu> {
                   ),
                 ),
               ),
-            ),            // Switch Item Status
+            ), // Switch Item Status
           ],
         ),
       ),

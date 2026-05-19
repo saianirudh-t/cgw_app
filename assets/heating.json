@@ -1,0 +1,13 @@
+{
+  "items": [
+    { "id": "ht_01", "name": "Heater 01", "status": "running" },
+    { "id": "ht_02", "name": "Heater 02", "status": "stop" },
+    { "id": "ht_03", "name": "Heater 03", "status": "error" },
+    { "id": "ht_04", "name": "Heater 04", "status": "running" },
+    { "id": "ht_05", "name": "Heater 05", "status": "stop" },
+    { "id": "ht_06", "name": "Heater 06", "status": "error" },
+    { "id": "ht_07", "name": "Heater 07", "status": "running" },
+    { "id": "ht_08", "name": "Heater 08", "status": "stop" },
+    { "id": "ht_09", "name": "Heater 09", "status": "error" }
+  ]
+}

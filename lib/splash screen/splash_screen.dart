@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:cgw_app/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:cgw_app/splash screen/login_card.dart'; // adjust path
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -11,12 +12,15 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
-  late final AnimationController _pulseController; // subtle looping scale
-  late final AnimationController _ringsController; // expanding rings (once)
-  late final AnimationController _fadeController; // final fade-out
+  late final AnimationController _pulseController;
+  late final AnimationController _ringsController;
+  late final AnimationController _fadeController;
   late final Animation<double> _pulseAnim;
   late final Animation<double> _glowAnim;
-  late Timer _timer;
+  Timer? _navigationTimer;
+
+  bool _pausedForConfig = false;
+  DeviceConfigResult? _deviceConfig;
 
   @override
   void initState() {
@@ -29,9 +33,7 @@ class _SplashScreenState extends State<SplashScreen>
     _pulseAnim = Tween<double>(begin: 0.98, end: 1.04).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
-    _glowAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
+    _glowAnim = Tween<double>(begin: 0.0, end: 1.0).animate(_pulseController);
     _pulseController.repeat(reverse: true);
 
     _ringsController = AnimationController(
@@ -39,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen>
       duration: Duration(milliseconds: 1100),
     );
     Future.delayed(Duration(milliseconds: 1400), () {
-      if (mounted) _ringsController.forward();
+      if (mounted && !_pausedForConfig) _ringsController.forward();
     });
 
     _fadeController = AnimationController(
@@ -47,28 +49,54 @@ class _SplashScreenState extends State<SplashScreen>
       duration: Duration(milliseconds: 450),
     );
 
-    // Navigate after 5s; start fade slightly before navigation to overlap
-    _timer = Timer(Duration(milliseconds: 5000), () async {
-      await _fadeController.forward();
-      if (mounted)
-        Navigator.of(
-          context,
-        ).pushReplacement(MaterialPageRoute(builder: (_) => HomeScreen()));
-    });
+
+    Future.delayed(Duration(milliseconds: 2000), _showLoginAndPause);
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _navigationTimer?.cancel();
     _pulseController.dispose();
     _ringsController.dispose();
     _fadeController.dispose();
     super.dispose();
   }
 
+
+Future<void> _showLoginAndPause() async {
+  setState(() => _pausedForConfig = true);
+  _ringsController.stop();
+
+  final result = await showDialog<DeviceConfigResult?>(
+    context: context,
+    barrierDismissible: false,
+    builder: (ctx) => LoginCard(
+      initialName: 'CUM0954',
+      initialIp: '192.168.0.12',
+      onConnect: (res) async { /* optional extra handling */ },
+    ),
+  );
+
+  // store config result
+  if (result?.configured == true) _deviceConfig = result;
+
+  setState(() => _pausedForConfig = false);
+  _ringsController.forward();
+
+  // cancel any existing timer
+  _navigationTimer?.cancel();
+  _navigationTimer = Timer(Duration(milliseconds: 3000), () async {
+    await _fadeController.forward();
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => HomeScreen(result: _deviceConfig)),
+    );
+  });
+}
+
   @override
   Widget build(BuildContext context) {
-    final bgColor = Colors.white; // light theme background
+    final bgColor = Colors.white;
     return Scaffold(
       backgroundColor: bgColor,
       body: FadeTransition(
@@ -80,7 +108,7 @@ class _SplashScreenState extends State<SplashScreen>
             child: Stack(
               alignment: Alignment.center,
               children: [
-                // Subtle radial glow (light-adapted)
+                // Subtle radial glow
                 AnimatedBuilder(
                   animation: _glowAnim,
                   builder: (context, child) {
@@ -96,12 +124,7 @@ class _SplashScreenState extends State<SplashScreen>
                             shape: BoxShape.circle,
                             gradient: RadialGradient(
                               colors: [
-                                Color.fromARGB(
-                                  (200 * v).toInt(),
-                                  255,
-                                  77,
-                                  116,
-                                ), // pale pinkish
+                                Color.fromARGB((200 * v).toInt(), 255, 77, 116),
                                 Color.fromARGB((90 * v).toInt(), 190, 60, 90),
                                 Colors.transparent,
                               ],
@@ -115,8 +138,7 @@ class _SplashScreenState extends State<SplashScreen>
                     );
                   },
                 ),
-
-                // Rings
+                // Rings painter (play/stop based on _pausedForConfig)
                 Positioned.fill(
                   child: CustomPaint(
                     painter: _RingsPainter(
@@ -126,7 +148,7 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                 ),
 
-                // Logo (pulsing)
+                // Logo area (keeps pulsing)
                 AnimatedBuilder(
                   animation: _pulseAnim,
                   builder: (context, child) {
@@ -135,13 +157,20 @@ class _SplashScreenState extends State<SplashScreen>
                       child: child,
                     );
                   },
-                  child: ClipOval(
-                    child: Image.asset(
-                      'assets/images/lg_splash.png',
-                      width: 200,
-                      height: 200,
-                      fit: BoxFit.cover,
-                    ),
+                  child: LayoutBuilder(
+                    builder: (context, _) {
+                      final diameter =
+                          MediaQuery.of(context).size.shortestSide * 0.4;
+                      return Center(
+                        child: CircleAvatar(
+                          radius: diameter / 2,
+                          backgroundImage: AssetImage(
+                            'assets/images/lg_splash.png',
+                          ),
+                          backgroundColor: Colors.transparent,
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
@@ -153,7 +182,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 }
 
-// Painter for rings and sparkles, tuned for light background.
+// Reuse the same RingsPainter from earlier (use imports: dart:math, ui)
 class _RingsPainter extends CustomPainter {
   final Animation<double> animation;
   final bool lightMode;
@@ -164,10 +193,8 @@ class _RingsPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final t = animation.value;
     if (t <= 0) return;
-
     final center = Offset(size.width / 2, size.height / 2);
 
-    // ring 1
     final ring1Progress = (t).clamp(0.0, 1.0);
     final ring1Radius = ui.lerpDouble(
       size.width * 0.45,
@@ -183,10 +210,8 @@ class _RingsPainter extends CustomPainter {
       ..strokeWidth = 2.8
       ..strokeCap = StrokeCap.round
       ..color = ring1Color;
-
     canvas.drawCircle(center, ring1Radius, ring1Paint);
 
-    // ring 2
     final ring2Progress = ((t - 0.12) / (1.0 - 0.12)).clamp(0.0, 1.0);
     final ring2Radius = ui.lerpDouble(
       size.width * 0.33,
@@ -202,10 +227,8 @@ class _RingsPainter extends CustomPainter {
       ..strokeWidth = 2.2
       ..strokeCap = StrokeCap.round
       ..color = ring2Color;
-
     canvas.drawCircle(center, ring2Radius, ring2Paint);
 
-    // sparkles (fading)
     final sparklePaint = Paint()
       ..color = (lightMode ? Colors.white70 : Colors.white).withOpacity(
         0.9 * (1.0 - t),
@@ -231,3 +254,5 @@ class _RingsPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _RingsPainter oldDelegate) => true;
 }
+
+// Simple HomePage that receives device config

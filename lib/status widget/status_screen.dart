@@ -5,16 +5,19 @@ import 'package:cgw_app/status%20widget/status_row.dart';
 import 'package:flutter/material.dart';
 import 'device_info.dart';
 import 'package:cgw_app/status widget/settings_icon.dart';
+import 'package:cgw_app/splash screen/login_card.dart';
 
 class StatusScreen extends StatefulWidget {
   final int running;
   final int stop;
   final int error;
+  final DeviceConfigResult? result;
   const StatusScreen({
     Key? key,
     required this.running,
     required this.stop,
     required this.error,
+    this.result,
   }) : super(key: key);
 
   @override
@@ -23,8 +26,10 @@ class StatusScreen extends StatefulWidget {
 
 class _StatusScreenState extends State<StatusScreen> {
   bool _infopressed = false;
+
   @override
   Widget build(BuildContext context) {
+    final name = widget.result?.deviceName ?? 'Unknown device';
     return Container(
       // Making it wide and adjusting padding
       width: double.infinity,
@@ -69,15 +74,7 @@ class _StatusScreenState extends State<StatusScreen> {
                       PopupMenuItem<void>(
                         enabled: false,
                         padding: EdgeInsets.zero,
-                        child: DeviceInfoLeftMenu(
-                          currentDevice: 'CGW0954',
-                          allDevices: const [
-                            'CGW0953',
-                            'CGW0954',
-                            'CGW0955',
-                            'CGW0956',
-                          ],
-                        ),
+                        child: DeviceInfo(result: widget.result),
                       ),
                     ],
                   );
@@ -92,9 +89,9 @@ class _StatusScreenState extends State<StatusScreen> {
                   spacing: 2,
                   children: [
                     Text(
-                      'CGW0954',
+                      name,
                       style: TextStyle(color: Colors.black87, fontSize: 20),
-                    ),
+                    ), //text
                     Icon(
                       _infopressed ? Icons.expand_less : Icons.expand_more,
                       size: 30,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'pressed_card.dart';
+import '../pressed_card.dart';
+import 'controls_screen.dart';
 
 class ControlsPanel extends StatelessWidget {
   final VoidCallback? onSettingsTap;
@@ -35,8 +36,7 @@ class ControlsPanel extends StatelessWidget {
             Expanded(
               child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
-                  // 1. Define the screen height limit (e.g., 550 pixels)
-                  // Falls back to MediaQuery height if the parent container context is unconstrained
+
                   final double availableHeight =
                       constraints.maxHeight == double.infinity
                       ? MediaQuery.of(context).size.height
@@ -51,12 +51,17 @@ class ControlsPanel extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
 
                     children: [
-                      // If in Row mode, wrap children in Expanded to distribute spacing evenly
                       isShortScreen
                           ? Expanded(
                               child: PressableCard(
                                 onTap: () {
-                                  print('tapped aircon');
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          ControlsScreen(controlType: 'Aircon'),
+                                    ),
+                                  );
                                 },
                                 child: _DeviceCard(
                                   title: 'Aircon',
@@ -67,7 +72,13 @@ class ControlsPanel extends StatelessWidget {
                             )
                           : PressableCard(
                               onTap: () {
-                                print('tapped aircon');
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        ControlsScreen(controlType: 'Aircon'),
+                                  ),
+                                );
                               },
                               child: _DeviceCard(
                                 title: 'Aircon',
@@ -80,12 +91,18 @@ class ControlsPanel extends StatelessWidget {
                       isShortScreen
                           ? const SizedBox(width: 16)
                           : const SizedBox(height: 16),
-
                       isShortScreen
                           ? Expanded(
                               child: PressableCard(
                                 onTap: () {
-                                  print("Heating pressed");
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ControlsScreen(
+                                        controlType: 'Heating',
+                                      ),
+                                    ),
+                                  );
                                 },
                                 child: _DeviceCard(
                                   title: 'Heating',
@@ -96,7 +113,13 @@ class ControlsPanel extends StatelessWidget {
                             )
                           : PressableCard(
                               onTap: () {
-                                print("Heating pressed");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        ControlsScreen(controlType: 'Heating'),
+                                  ),
+                                );
                               },
                               child: _DeviceCard(
                                 title: 'Heating',

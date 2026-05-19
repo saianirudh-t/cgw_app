@@ -1,24 +1,33 @@
 import 'package:cgw_app/status%20widget/status_screen.dart';
 import 'package:flutter/material.dart';
-import 'controls_panel.dart';
+import 'controls/controls_panel.dart';
+import 'splash screen/login_card.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final DeviceConfigResult? result;
+
+  const HomeScreen({Key? key, required this.result}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreen();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreen extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> {
+  late DeviceConfigResult? _result;
+
+  @override
+  void initState() {
+    super.initState();
+    _result = widget.result;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // Setting a dark theme to match the widget's aesthetic
       theme: ThemeData(
         brightness: Brightness.light,
         scaffoldBackgroundColor: const Color(0xFFF5F5F5),
-        // Light grey background
       ),
 
       home: Scaffold(
@@ -26,7 +35,6 @@ class _HomeScreen extends State<HomeScreen> {
 
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          //child: RunningStatus(runningCount: 9, stopCount: 2, errorCount: 4),
           child: Column(
             spacing: 20,
             children: [
@@ -43,7 +51,12 @@ class _HomeScreen extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                child: StatusScreen(running: 10, stop: 2, error: 6),
+                child: StatusScreen(
+                  running: 10,
+                  stop: 2,
+                  error: 6,
+                  result: widget.result,
+                ),
               ),
               Expanded(
                 child: Container(
@@ -59,11 +72,7 @@ class _HomeScreen extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  child: ControlsPanel(
-                    onSettingsTap: () {
-                      // open settings
-                    },
-                  ),
+                  child: ControlsPanel(),
                 ),
               ),
             ],

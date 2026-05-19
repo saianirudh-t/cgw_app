@@ -1,0 +1,13 @@
+{
+  "items": [
+    { "id": "ac_01", "name": "AC 01", "status": "running" },
+    { "id": "ac_02", "name": "AC 02", "status": "stop" },
+    { "id": "ac_03", "name": "AC 03", "status": "error" },
+        { "id": "ac_04", "name": "AC 04", "status": "running" },
+    { "id": "ac_05", "name": "AC 05", "status": "stop" },
+    { "id": "ac_06", "name": "AC 06", "status": "error" },
+        { "id": "ac_07", "name": "AC 07", "status": "running" },
+    { "id": "ac_08", "name": "AC 08", "status": "stop" },
+    { "id": "ac_09", "name": "AC 09", "status": "error" }
+  ]
+}
