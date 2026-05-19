@@ -1,6 +1,6 @@
+import 'package:cgw_app/controls/controls_screen.dart';
 import 'package:flutter/material.dart';
 import '../pressed_card.dart';
-import 'controls_screen.dart';
 
 class ControlsPanel extends StatelessWidget {
   final VoidCallback? onSettingsTap;
@@ -36,7 +36,6 @@ class ControlsPanel extends StatelessWidget {
             Expanded(
               child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
-
                   final double availableHeight =
                       constraints.maxHeight == double.infinity
                       ? MediaQuery.of(context).size.height
@@ -59,7 +58,7 @@ class ControlsPanel extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (_) =>
-                                          ControlsScreen(controlType: 'Aircon'),
+                                          ControlsScreen(controlType: "Aircon"),
                                     ),
                                   );
                                 },

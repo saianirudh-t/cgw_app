@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-// Simple model
 class ControlItem {
   final String id;
   final String name;
@@ -15,7 +14,6 @@ class ControlItem {
   );
 }
 
-// Reusable ControlsScreen — pass controlType either 'Aircon' or 'Heating'
 class ControlsScreen extends StatefulWidget {
   final String controlType; // 'Aircon' or 'Heating'
   const ControlsScreen({Key? key, required this.controlType}) : super(key: key);
@@ -24,8 +22,10 @@ class ControlsScreen extends StatefulWidget {
   State<ControlsScreen> createState() => _ControlsScreenState();
 }
 
+
 class _ControlsScreenState extends State<ControlsScreen> {
   late Future<List<ControlItem>> _itemsFuture;
+  bool _useGrid = true; // default view
 
   @override
   void initState() {
@@ -38,9 +38,11 @@ class _ControlsScreenState extends State<ControlsScreen> {
         ? 'assets/aircon.json'
         : 'assets/heating.json';
     final raw = await rootBundle.loadString(assetPath);
-    final decoded = json.decode(raw);
+    final decoded = json.decode(raw) as Map<String, dynamic>;
     final itemsArr = decoded['items'] as List<dynamic>? ?? [];
-    return itemsArr.map((e) => ControlItem.fromJson(e)).toList();
+    return itemsArr
+        .map((e) => ControlItem.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Widget _statusIcon(String status) {
@@ -58,7 +60,16 @@ class _ControlsScreenState extends State<ControlsScreen> {
   Widget build(BuildContext context) {
     final isAircon = widget.controlType.toLowerCase() == 'aircon';
     return Scaffold(
-      appBar: AppBar(title: Text('${widget.controlType} Control')),
+      appBar: AppBar(
+        title: Text('${widget.controlType} Control'),
+        actions: [
+          IconButton(
+            tooltip: _useGrid ? 'Show list' : 'Show grid',
+            icon: Icon(_useGrid ? Icons.view_list : Icons.grid_view),
+            onPressed: () => setState(() => _useGrid = !_useGrid),
+          ),
+        ],
+      ),
       body: FutureBuilder<List<ControlItem>>(
         future: _itemsFuture,
         builder: (context, snap) {
@@ -74,13 +85,17 @@ class _ControlsScreenState extends State<ControlsScreen> {
           if (items.isEmpty)
             return Center(child: Text('No ${widget.controlType} items'));
 
-          if (isAircon) {
+          // If grid requested show grid, otherwise show list.
+          if (_useGrid) {
+            // Grid view used for both Aircon and Heating
             return Padding(
               padding: const EdgeInsets.all(12.0),
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  childAspectRatio: 0.9,
+                  crossAxisCount: isAircon
+                      ? 3
+                      : 2, // keep aircon denser by default
+                  childAspectRatio: isAircon ? 0.9 : 1.2,
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
                 ),
@@ -102,11 +117,13 @@ class _ControlsScreenState extends State<ControlsScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.ac_unit,
+                            isAircon
+                                ? Icons.ac_unit
+                                : Icons.local_fire_department,
                             size: 28,
                             color: it.status == 'error'
                                 ? Colors.red
-                                : Colors.blue,
+                                : (isAircon ? Colors.blue : Colors.deepOrange),
                           ),
                           SizedBox(height: 8),
                           Text(
@@ -124,7 +141,7 @@ class _ControlsScreenState extends State<ControlsScreen> {
               ),
             );
           } else {
-            // Heating -> List
+            // List view used for both Aircon and Heating
             return ListView.separated(
               padding: EdgeInsets.all(12),
               itemCount: items.length,
@@ -135,10 +152,12 @@ class _ControlsScreenState extends State<ControlsScreen> {
                   child: ListTile(
                     leading: CircleAvatar(
                       child: Icon(
-                        Icons.local_fire_department,
+                        isAircon ? Icons.ac_unit : Icons.local_fire_department,
                         color: Colors.white,
                       ),
-                      backgroundColor: Colors.deepOrange,
+                      backgroundColor: isAircon
+                          ? Colors.blue
+                          : Colors.deepOrange,
                     ),
                     title: Text(it.name),
                     subtitle: Text(it.id),
@@ -181,7 +200,6 @@ class _ControlsScreenState extends State<ControlsScreen> {
   }
 
   void _onItemTap(ControlItem it) {
-    // Replace with your detail screen or command flow
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
