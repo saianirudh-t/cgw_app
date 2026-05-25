@@ -1,24 +1,77 @@
+import 'package:cgw_app/controllers/device_details.dart';
 import 'package:cgw_app/status%20widget/status_screen.dart';
 import 'package:flutter/material.dart';
-import 'controls/controls_panel.dart';
+import 'control widget/controls_panel.dart';
 import 'splash screen/login_card.dart';
+import "dart:ui";
+import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
   final DeviceConfigResult? result;
 
-  const HomeScreen({Key? key, required this.result}) : super(key: key);
+  const HomeScreen({super.key, required this.result});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late DeviceConfigResult? _result;
-
+  DeviceConfigResult? _deviceConfig;
+  bool _loginShown = false;
+  final UserControllers updateDetails = Get.find();
   @override
   void initState() {
     super.initState();
-    _result = widget.result;
+    _deviceConfig = widget.result;
+    // wait for first frame so context/mounted are ready
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowLogin());
+  }
+
+  Future<void> _maybeShowLogin() async {
+    if (_loginShown) return;
+    _loginShown = true;
+
+    // if already configured, skip
+    if (_deviceConfig?.configured == true) return;
+
+    final result = await showGeneralDialog<DeviceConfigResult?>(
+      context: context,
+      barrierDismissible: false,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: Colors.black54, // darkens behind the blur
+      transitionDuration: Duration(milliseconds: 200),
+      pageBuilder: (ctx, anim, secondaryAnim) {
+        return SafeArea(
+          child: Builder(
+            builder: (innerCtx) {
+              return Stack(
+                children: [
+                  // blur the background
+                  BackdropFilter(
+                    filter: ImageFilter.blur(
+                      sigmaX: 5.0,
+                      sigmaY: 5.0,
+                    ), // increase these for stronger blur
+                    child: Container(color: Colors.black26),
+                  ),
+
+                  Center(
+                    child: LoginCard(
+                      initialName: 'CGW0954',
+                      initialIp: '192.168.0.12',
+                      onConnect: (res) async {},
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
+      transitionBuilder: (ctx, anim, secondaryAnim, child) {
+        return FadeTransition(opacity: anim, child: child);
+      },
+    );
   }
 
   @override
@@ -54,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: StatusScreen(
                   running: 10,
                   stop: 2,
-                  error: 6,
+                  error: 1,
                   result: widget.result,
                 ),
               ),

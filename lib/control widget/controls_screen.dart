@@ -16,16 +16,15 @@ class ControlItem {
 
 class ControlsScreen extends StatefulWidget {
   final String controlType; // 'Aircon' or 'Heating'
-  const ControlsScreen({Key? key, required this.controlType}) : super(key: key);
+  const ControlsScreen({super.key, required this.controlType});
 
   @override
   State<ControlsScreen> createState() => _ControlsScreenState();
 }
 
-
 class _ControlsScreenState extends State<ControlsScreen> {
   late Future<List<ControlItem>> _itemsFuture;
-  bool _useGrid = true; // default view
+  bool _useGrid = false; // default view
 
   @override
   void initState() {
@@ -63,10 +62,13 @@ class _ControlsScreenState extends State<ControlsScreen> {
       appBar: AppBar(
         title: Text('${widget.controlType} Control'),
         actions: [
-          IconButton(
-            tooltip: _useGrid ? 'Show list' : 'Show grid',
-            icon: Icon(_useGrid ? Icons.view_list : Icons.grid_view),
-            onPressed: () => setState(() => _useGrid = !_useGrid),
+          Padding(
+            padding: const EdgeInsets.only(right: 15.0),
+            child: IconButton(
+              tooltip: _useGrid ? 'Show list' : 'Show grid',
+              icon: Icon(_useGrid ? Icons.view_list : Icons.grid_view),
+              onPressed: () => setState(() => _useGrid = !_useGrid),
+            ),
           ),
         ],
       ),
@@ -82,19 +84,16 @@ class _ControlsScreenState extends State<ControlsScreen> {
             );
           }
           final items = snap.data ?? [];
-          if (items.isEmpty)
+          if (items.isEmpty) {
             return Center(child: Text('No ${widget.controlType} items'));
+          }
 
-          // If grid requested show grid, otherwise show list.
           if (_useGrid) {
-            // Grid view used for both Aircon and Heating
             return Padding(
               padding: const EdgeInsets.all(12.0),
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: isAircon
-                      ? 3
-                      : 2, // keep aircon denser by default
+                  crossAxisCount: isAircon ? 3 : 2,
                   childAspectRatio: isAircon ? 0.9 : 1.2,
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
@@ -145,19 +144,19 @@ class _ControlsScreenState extends State<ControlsScreen> {
             return ListView.separated(
               padding: EdgeInsets.all(12),
               itemCount: items.length,
-              separatorBuilder: (_, __) => SizedBox(height: 10),
+              separatorBuilder: (_, _) => SizedBox(height: 10),
               itemBuilder: (context, i) {
                 final it = items[i];
                 return Card(
                   child: ListTile(
                     leading: CircleAvatar(
+                      backgroundColor: isAircon
+                          ? Colors.blue
+                          : Colors.deepOrange,
                       child: Icon(
                         isAircon ? Icons.ac_unit : Icons.local_fire_department,
                         color: Colors.white,
                       ),
-                      backgroundColor: isAircon
-                          ? Colors.blue
-                          : Colors.deepOrange,
                     ),
                     title: Text(it.name),
                     subtitle: Text(it.id),

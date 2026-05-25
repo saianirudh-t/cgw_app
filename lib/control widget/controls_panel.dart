@@ -1,11 +1,11 @@
-import 'package:cgw_app/controls/controls_screen.dart';
+import 'package:cgw_app/control%20widget/controls_screen.dart';
 import 'package:flutter/material.dart';
 import '../pressed_card.dart';
 
 class ControlsPanel extends StatelessWidget {
   final VoidCallback? onSettingsTap;
 
-  const ControlsPanel({Key? key, this.onSettingsTap}) : super(key: key);
+  const ControlsPanel({super.key, this.onSettingsTap});
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,7 @@ class ControlsPanel extends StatelessWidget {
                                 },
                                 child: _DeviceCard(
                                   title: 'Aircon',
-                                  subtitle: 'Living Room',
+                                  subtitle: 'Room1',
                                   accentColor: airconAccent,
                                 ),
                               ),
@@ -81,7 +81,7 @@ class ControlsPanel extends StatelessWidget {
                               },
                               child: _DeviceCard(
                                 title: 'Aircon',
-                                subtitle: 'Living Room',
+                                subtitle: 'Room1',
                                 accentColor: airconAccent,
                               ),
                             ),
@@ -105,7 +105,7 @@ class ControlsPanel extends StatelessWidget {
                                 },
                                 child: _DeviceCard(
                                   title: 'Heating',
-                                  subtitle: 'Living Room',
+                                  subtitle: 'Room1',
                                   accentColor: heatingAccent,
                                 ),
                               ),
@@ -122,7 +122,7 @@ class ControlsPanel extends StatelessWidget {
                               },
                               child: _DeviceCard(
                                 title: 'Heating',
-                                subtitle: 'Living Room',
+                                subtitle: 'Room1',
                                 accentColor: heatingAccent,
                               ),
                             ),
@@ -144,11 +144,11 @@ class _DeviceCard extends StatelessWidget {
   final Color accentColor;
 
   const _DeviceCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.subtitle,
     required this.accentColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

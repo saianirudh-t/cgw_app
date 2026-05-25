@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:cgw_app/splash screen/login_card.dart'; // adjust path
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -19,9 +21,7 @@ class _SplashScreenState extends State<SplashScreen>
   late final Animation<double> _glowAnim;
   Timer? _navigationTimer;
 
-  bool _pausedForConfig = false;
-  DeviceConfigResult? _deviceConfig;
-
+  @override
   @override
   void initState() {
     super.initState();
@@ -40,8 +40,9 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: Duration(milliseconds: 1100),
     );
+    // start rings after a short delay
     Future.delayed(Duration(milliseconds: 1400), () {
-      if (mounted && !_pausedForConfig) _ringsController.forward();
+      if (mounted) _ringsController.forward();
     });
 
     _fadeController = AnimationController(
@@ -49,8 +50,16 @@ class _SplashScreenState extends State<SplashScreen>
       duration: Duration(milliseconds: 450),
     );
 
-
-    Future.delayed(Duration(milliseconds: 2000), _showLoginAndPause);
+    // navigate to HomeScreen after splash duration
+    _navigationTimer?.cancel();
+    _navigationTimer = Timer(Duration(milliseconds: 3000), () async {
+      // run fade animation first
+      await _fadeController.forward();
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => HomeScreen(result: null)),
+      );
+    });
   }
 
   @override
@@ -61,38 +70,6 @@ class _SplashScreenState extends State<SplashScreen>
     _fadeController.dispose();
     super.dispose();
   }
-
-
-Future<void> _showLoginAndPause() async {
-  setState(() => _pausedForConfig = true);
-  _ringsController.stop();
-
-  final result = await showDialog<DeviceConfigResult?>(
-    context: context,
-    barrierDismissible: false,
-    builder: (ctx) => LoginCard(
-      initialName: 'CUM0954',
-      initialIp: '192.168.0.12',
-      onConnect: (res) async { /* optional extra handling */ },
-    ),
-  );
-
-  // store config result
-  if (result?.configured == true) _deviceConfig = result;
-
-  setState(() => _pausedForConfig = false);
-  _ringsController.forward();
-
-  // cancel any existing timer
-  _navigationTimer?.cancel();
-  _navigationTimer = Timer(Duration(milliseconds: 3000), () async {
-    await _fadeController.forward();
-    if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => HomeScreen(result: _deviceConfig)),
-    );
-  });
-}
 
   @override
   Widget build(BuildContext context) {

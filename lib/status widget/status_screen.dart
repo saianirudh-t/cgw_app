@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'device_info.dart';
 import 'package:cgw_app/status widget/settings_icon.dart';
 import 'package:cgw_app/splash screen/login_card.dart';
+import 'package:get/get.dart';
+import 'package:cgw_app/controllers/device_details.dart';
 
 class StatusScreen extends StatefulWidget {
   final int running;
@@ -13,12 +15,12 @@ class StatusScreen extends StatefulWidget {
   final int error;
   final DeviceConfigResult? result;
   const StatusScreen({
-    Key? key,
+    super.key,
     required this.running,
     required this.stop,
     required this.error,
     this.result,
-  }) : super(key: key);
+  });
 
   @override
   State<StatusScreen> createState() => _StatusScreenState();
@@ -29,7 +31,9 @@ class _StatusScreenState extends State<StatusScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final name = widget.result?.deviceName ?? 'Unknown device';
+    final deviceInfo = Get.find<UserControllers>();
+    final name = deviceInfo.deviceName.value;
+    final total = (widget.running + widget.stop + widget.error);
     return Container(
       // Making it wide and adjusting padding
       width: double.infinity,
@@ -54,7 +58,6 @@ class _StatusScreenState extends State<StatusScreen> {
                   final RenderBox renderBox =
                       context.findRenderObject() as RenderBox;
                   final Offset offset = renderBox.localToGlobal(Offset.zero);
-                  // 2. Open your separate menu container at that precise location
                   await showMenu<void>(
                     context: context,
                     useRootNavigator: true,
@@ -122,6 +125,7 @@ class _StatusScreenState extends State<StatusScreen> {
                       running: widget.running,
                       stop: widget.stop,
                       error: widget.error,
+                      total: total.toDouble(),
                     ),
                   ),
                 ),
@@ -131,14 +135,7 @@ class _StatusScreenState extends State<StatusScreen> {
                       horizontal: 16,
                       vertical: 6,
                     ),
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 199, 199, 199),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Colors.grey.shade50, // Very soft border line
-                        width: 1.0,
-                      ),
-                    ),
+                    decoration: BoxDecoration(color: Colors.white),
                     child: Row(
                       mainAxisSize: MainAxisSize.min, // Hug content tightly
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -156,7 +153,7 @@ class _StatusScreenState extends State<StatusScreen> {
                           ),
                         ),
                         Text(
-                          "${widget.running + widget.stop + widget.error}",
+                          "$total",
                           style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -185,15 +182,16 @@ class _StatusScreenState extends State<StatusScreen> {
 
 class GaugePainter extends CustomPainter {
   final int running, stop, error;
+  final double total;
   GaugePainter({
     required this.running,
     required this.stop,
     required this.error,
+    required this.total,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final double total = (running + stop + error).toDouble();
     if (total == 0) return;
 
     final rect = Rect.fromLTWH(0, 0, size.width, size.width);

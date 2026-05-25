@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:cgw_app/controllers/device_details.dart';
 
 class DeviceConfigResult {
   final String deviceName;
@@ -17,11 +19,11 @@ class LoginCard extends StatefulWidget {
   final String initialIp;
 
   const LoginCard({
-    Key? key,
+    super.key,
     this.onConnect,
     this.initialName = '',
     this.initialIp = '',
-  }) : super(key: key);
+  });
 
   @override
   State<LoginCard> createState() => _LoginCardState();
@@ -30,6 +32,7 @@ class LoginCard extends StatefulWidget {
 class _LoginCardState extends State<LoginCard> {
   final _focusNode1 = FocusNode();
   final _focusNode2 = FocusNode();
+  final UserControllers deviceDetails = Get.find<UserControllers>();
   late TextEditingController _nameC;
   late TextEditingController _ipC;
   bool _loading = false;
@@ -57,7 +60,6 @@ class _LoginCardState extends State<LoginCard> {
       ip: _ipC.text.trim(),
     );
 
-
     await Future.delayed(Duration(milliseconds: 900));
 
     if (widget.onConnect != null) await widget.onConnect!(result);
@@ -66,14 +68,6 @@ class _LoginCardState extends State<LoginCard> {
       setState(() => _loading = false);
       Navigator.of(context).pop(result);
     }
-  }
-
-  String? _ipValidator(String? v) {
-    if (v == null || v.trim().isEmpty) return 'Enter IP';
-    final parts = v.trim().split('.');
-    if (parts.length != 4) return 'Invalid IP';
-    if (parts.any((p) => int.tryParse(p) == null)) return 'Invalid IP';
-    return null;
   }
 
   @override
@@ -158,7 +152,6 @@ class _LoginCardState extends State<LoginCard> {
                     ),
                   ),
                   keyboardType: TextInputType.number,
-                  validator: _ipValidator,
                 ),
                 SizedBox(height: 14), // Connect button
                 SizedBox(

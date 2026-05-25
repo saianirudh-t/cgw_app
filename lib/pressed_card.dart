@@ -4,7 +4,7 @@ class PressableCard extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;
 
-  PressableCard({Key? key, required this.child, this.onTap}) : super(key: key);
+  const PressableCard({super.key, required this.child, this.onTap});
 
   @override
   _PressableCardState createState() => _PressableCardState();

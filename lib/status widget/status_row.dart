@@ -6,11 +6,11 @@ class StatusRow extends StatelessWidget {
   final int error;
 
   const StatusRow({
-    Key? key,
+    super.key,
     required this.running,
     required this.stop,
     required this.error,
-  }) : super(key: key);
+  });
 
   Widget _badge({
     required Color bgColor,

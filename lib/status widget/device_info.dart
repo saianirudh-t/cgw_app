@@ -1,9 +1,11 @@
+import 'package:cgw_app/controllers/device_details.dart';
 import 'package:cgw_app/splash%20screen/login_card.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class DeviceInfo extends StatefulWidget {
   final DeviceConfigResult? result;
-  const DeviceInfo({Key? key, this.result}) : super(key: key);
+  const DeviceInfo({super.key, this.result});
 
   @override
   _DeviceInfoState createState() => _DeviceInfoState();
@@ -21,8 +23,9 @@ class _DeviceInfoState extends State<DeviceInfo> {
 
   @override
   Widget build(BuildContext context) {
-    final name = widget.result?.deviceName ?? 'Unknown device';
-    final ip = widget.result?.ip ?? '—';
+    final UserControllers deviceInfo = Get.find<UserControllers>();
+    final name = deviceInfo.deviceName.value;
+    final ip = deviceInfo.ipAdress.value;
     return Material(
       borderRadius: BorderRadius.circular(12.0),
       color: Colors.white,
@@ -33,7 +36,6 @@ class _DeviceInfoState extends State<DeviceInfo> {
           spacing: 6,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
