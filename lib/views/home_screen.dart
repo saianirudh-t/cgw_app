@@ -1,8 +1,8 @@
 import 'package:cgw_app/controllers/device_details.dart';
-import 'package:cgw_app/status%20widget/status_screen.dart';
+import 'package:cgw_app/views/status_screen.dart';
 import 'package:flutter/material.dart';
-import 'control widget/controls_panel.dart';
-import 'splash screen/login_card.dart';
+import 'controls_panel.dart';
+import '../assets/login_card.dart';
 import "dart:ui";
 import 'package:get/get.dart';
 
@@ -22,7 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _deviceConfig = widget.result;
     // wait for first frame so context/mounted are ready
     WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowLogin());
   }
@@ -34,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // if already configured, skip
     if (_deviceConfig?.configured == true) return;
 
-    final result = await showGeneralDialog<DeviceConfigResult?>(
+    await showGeneralDialog<DeviceConfigResult?>(
       context: context,
       barrierDismissible: false,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
@@ -104,12 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                child: StatusScreen(
-                  running: 10,
-                  stop: 2,
-                  error: 1,
-                  result: widget.result,
-                ),
+                child: StatusScreen(),
               ),
               Expanded(
                 child: Container(

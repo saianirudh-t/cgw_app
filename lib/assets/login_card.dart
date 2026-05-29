@@ -55,19 +55,18 @@ class _LoginCardState extends State<LoginCard> {
   Future<void> _onConnectPressed() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
+
     final result = DeviceConfigResult(
       deviceName: _nameC.text.trim(),
       ip: _ipC.text.trim(),
     );
 
-    await Future.delayed(Duration(milliseconds: 900));
+    // update Getx controller
+    final deviceCtrl = Get.find<UserControllers>();
+    deviceCtrl.deviceDetails(result.deviceName, result.ip);
 
-    if (widget.onConnect != null) await widget.onConnect!(result);
-
-    if (mounted) {
-      setState(() => _loading = false);
-      Navigator.of(context).pop(result);
-    }
+    // return result to the caller and close dialog
+    Navigator.of(context).pop(result);
   }
 
   @override

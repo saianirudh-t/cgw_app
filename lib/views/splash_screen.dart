@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
-import 'package:cgw_app/home_screen.dart';
+import 'package:cgw_app/views/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:cgw_app/splash screen/login_card.dart'; // adjust path
+import 'package:get/get.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -56,9 +56,7 @@ class _SplashScreenState extends State<SplashScreen>
       // run fade animation first
       await _fadeController.forward();
       if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => HomeScreen(result: null)),
-      );
+      Get.offNamed('/homescreen');
     });
   }
 

@@ -1,12 +1,9 @@
-import 'package:cgw_app/control%20widget/controls_screen.dart';
+
 import 'package:flutter/material.dart';
-import '../pressed_card.dart';
+import '../assets/pressed_card.dart';
+import 'package:get/get.dart';
 
 class ControlsPanel extends StatelessWidget {
-  final VoidCallback? onSettingsTap;
-
-  const ControlsPanel({super.key, this.onSettingsTap});
-
   @override
   Widget build(BuildContext context) {
     // Colors
@@ -54,13 +51,7 @@ class ControlsPanel extends StatelessWidget {
                           ? Expanded(
                               child: PressableCard(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          ControlsScreen(controlType: "Aircon"),
-                                    ),
-                                  );
+                                  Get.toNamed('/controls', arguments: 'Aircon');
                                 },
                                 child: _DeviceCard(
                                   title: 'Aircon',
@@ -71,14 +62,9 @@ class ControlsPanel extends StatelessWidget {
                             )
                           : PressableCard(
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        ControlsScreen(controlType: 'Aircon'),
-                                  ),
-                                );
+                                Get.toNamed('/controls', arguments: 'Aircon');
                               },
+
                               child: _DeviceCard(
                                 title: 'Aircon',
                                 subtitle: 'Room1',
@@ -94,13 +80,9 @@ class ControlsPanel extends StatelessWidget {
                           ? Expanded(
                               child: PressableCard(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => ControlsScreen(
-                                        controlType: 'Heating',
-                                      ),
-                                    ),
+                                  Get.toNamed(
+                                    '/controls',
+                                    arguments: 'Heating',
                                   );
                                 },
                                 child: _DeviceCard(
@@ -112,13 +94,7 @@ class ControlsPanel extends StatelessWidget {
                             )
                           : PressableCard(
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        ControlsScreen(controlType: 'Heating'),
-                                  ),
-                                );
+                                Get.toNamed('/controls', arguments: 'Heating');
                               },
                               child: _DeviceCard(
                                 title: 'Heating',
@@ -155,13 +131,13 @@ class _DeviceCard extends StatelessWidget {
     return Material(
       elevation: 4,
       borderRadius: BorderRadius.circular(20),
-      shadowColor: const Color.fromARGB(255, 18, 2, 2),
+      shadowColor: const Color.fromARGB(255, 18, 1, 5),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -175,12 +151,14 @@ class _DeviceCard extends StatelessWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: accentColor.withOpacity(0.12),
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.all(Radius.circular(6)),
                   ),
                   child: Icon(
-                    title == 'Aircon' ? Icons.ac_unit : Icons.heat_pump,
+                    title == 'Aircon'
+                        ? Icons.ac_unit
+                        : Icons.local_fire_department,
                     color: accentColor,
-                    size: 20,
+                    size: 25,
                   ),
                 ),
                 const SizedBox(width: 12),
